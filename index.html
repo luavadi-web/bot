@@ -8,37 +8,34 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
     :root {
-        /* Все цвета берем строго из темы Telegram */
+        /* Берем системные переменные Telegram */
         --tg-bg: var(--tg-theme-bg-color, #ffffff);
         --tg-text: var(--tg-theme-text-color, #000000);
         --tg-hint: var(--tg-theme-hint-color, #999999);
         --tg-button: var(--tg-theme-button-color, #2481cc);
         --tg-button-text: var(--tg-theme-button-text-color, #ffffff);
         --tg-secondary-bg: var(--tg-theme-secondary-bg-color, #f4f4f4);
-        --tg-input-bg: var(--tg-theme-input-bg-color, #ffffff);
+        /* Граница будет использовать цвет подсказки (hint), чтобы быть мягкой */
         --tg-input-border: var(--tg-theme-hint-color, #dddddd);
     }
 
     body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-family: -apple-system, BlinkMacintoch, sans-serif;
         background-color: var(--tg-bg);
         color: var(--tg-text);
         margin: 0;
         padding: 20px;
         display: flex;
-        flex-direction: column;
-        align-items: center;
+        justify-content: center;
     }
 
     .registration-card {
         background: var(--tg-secondary-bg);
         padding: 30px 25px;
-        border-radius: 24px; /* Более мягкие, современные углы */
+        border-radius: 24px;
         width: 100%;
         max-width: 400px;
         box-sizing: border-box;
-        /* Легкая тень для объема карточки */
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     }
 
     label {
@@ -47,103 +44,62 @@
         font-weight: 600;
         font-size: 14px;
         color: var(--tg-text);
-        opacity: 0.9;
         margin-left: 4px;
     }
 
-    /* --- ПРЕВРАЩАЕМ ПОЛЯ ВВОДА В КРАСИВЫЕ ЭЛЕМЕНТЫ --- */
+    /* --- ПОЛЯ ВВОДА: ТЕПЕРЬ ТОГО ЖЕ ЦВЕТА, ЧТО И ФОН --- */
     input[type="text"],
     input[type="tel"],
     input[type="email"],
-    input[type="date"],
-    input[type="number"],
     select {
         width: 100%;
         padding: 15px 18px;
         margin-bottom: 22px;
 
-        /* Цвет фона берем из темы (в темной теме он будет серым/черным) */
-        background-color: var(--tg-input-bg);
+        /* Сливаем с фоном: прозрачность или цвет фона страницы */
+        background-color: transparent;
         color: var(--tg-text);
 
-        /* Граница: делаем её тонкой и мягкой */
+        /* Оставляем только тонкую границу, чтобы поле не "исчезло" совсем */
         border: 1.5px solid var(--tg-input-border);
-        border-radius: 14px; /* Закругленные края как в iOS/Android */
+        border-radius: 14px;
 
         font-size: 16px;
-        font-weight: 400;
-        box-sizing: border-box;
         outline: none;
 
-        /* Плавность всех переходов */
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-
-        /* Убираем стандартные тени браузера */
-        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+        /* Плавный переход */
+        transition: all 0.25s ease-in-out;
     }
 
-    /* ЭФФЕКТ ПРИ НАВЕДЕНИИ НА ПОЛЕ */
-    input:hover, select:hover {
-        border-color: var(--tg-hint);
-        background-color: var(--tg-input-bg);
-    }
-
-    /* ЭФФЕКТ ПРИ НАЖАТИИ (ФОКУС) */
+    /* ЭФФЕКТ ПРИ НАЖАТИИ: Поле подсвечивается цветом бренда */
     input:focus, select:focus {
-        /* Граница становится яркой, как цвет кнопки Telegram */
         border-color: var(--tg-button);
-        /* Добавляем мягкое свечение вокруг поля */
-        box-shadow: 0 0 0 4px rgba(36, 129, 204, 0.15);
-        /* Немного приподнимаем визуально */
-        transform: translateY(-1px);
+        /* Добавляем легкое свечение, чтобы пользователь видел, где он пишет */
+        box-shadow: 0 0 0 3px rgba(36, 129, 204, 0.15);
     }
 
-    /* Стилизация плейсхолдера (подсказки) */
+    /* Плейсхолдер (подсказка) */
     ::placeholder {
         color: var(--tg-hint);
-        opacity: 0.7;
+        opacity: 0.6;
     }
 
-    /* --- КНОПКА "ЗАРЕГИСТРИРОВАТЬ" --- */
+    /* Кнопка остается акцентной */
     .btn-submit {
-        display: block;
-        margin: 15px auto 0 auto;
         width: 100%;
         padding: 18px;
-
         background-color: var(--tg-button);
         color: var(--tg-button-text);
         border: none;
         border-radius: 16px;
-
         font-size: 18px;
         font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-
         cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .btn-submit:hover {
-        filter: brightness(1.1);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease;
     }
 
     .btn-submit:active {
-        transform: translateY(0);
-        filter: brightness(0.9);
-    }
-
-    /* Стилизация выпадающего списка (Select) */
-    select {
-        appearance: none; /* Убираем стандартную стрелку браузера */
-        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org/2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2424%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23888888%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
-        background-repeat: no-repeat;
-        background-position: right 15px center;
-        padding-right: 45px;
+        transform: scale(0.97); /* Эффект нажатия */
     }
 </style>
 </head>
