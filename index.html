@@ -7,112 +7,132 @@
     <!-- Подключаем SDK Telegram -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
+    /*
+       ================================================================
+       КОНТРОЛЬНАЯ ПАНЕЛЬ (Изменяй только эти значения)
+       ================================================================
+    */
     :root {
-        --tg-bg: var(--tg-theme-bg-color, #ffffff);
-        --tg-text: var(--tg-theme-text-color, #000000);
-        --tg-hint: var(--tg-theme-hint-color, #999999);
-        --tg-button: var(--tg-theme-button-color, #2481cc);
-        --tg-button-text: var(--tg-theme-button-text-color, #ffffff);
-        --tg-input-border: var(--tg-theme-hint-color, #dddddd);
+        /* --- ЦВЕТА (используй var(--tg-...) для интеграции с Telegram) --- */
+        --main-bg: transparent;            /* Фон всей формы */
+        --field-bg: transparent;               /* Фон полей ввода */
+        --field-border: var(--tg-theme-hint-color, #dddddd); /* Цвет границ */
+        --field-text: var(--tg-theme-text-color, #000000);    /* Цвет текста внутри */
+        --field-hint: var(--tg-theme-hint-color, #999999);  /* Цвет подсказки (placeholder) */
+        --accent-color: var(--tg-theme-button-color, #2481cc); /* Цвет при нажатии/фокусе */
+        --accent-text: varvar(--tg-theme-button-text-color, #ffffff); /* Цвет текста на кнопке */
 
-        /* Единая высота для всех элементов */
-        --field-height: 45px;
+        /* --- РАЗМЕРЫ (Геометрия) --- */
+        --field-height: 45px;                  /* ВЫСОТА ВСЕХ ПОЛЕЙ (сделай одинаковой) */
+        --field-radius: 12px;                  /* Скругление углов полей */
+        --field-padding-x: 14px;                /* Отступ текста слева/справа */
+        --field-border-width: 1.5px;            /* Толщина рамки */
+        --font-size-main: 15px;                /* Размер шрифта в полях */
+
+        /* --- КНОПКА --- */
+        --btn-height: 50px;                     /* Высота кнопки */
+        --btn-radius: 12px;                     /* Скругление кнопки */
+        --btn-font-size: 16px;                  /* Размер шрифта на кнопке */
+        --btn-margin-top: 25px;                /* Отступ кнопки от полей */
+
+        /* --- ОТСТУПЫ ФОРМЫ --- */
+        --form-padding: 15px;                  /* Внутренний отступ всей карточки */
+        --label-margin-top: 15px;              /* Отступ между подписью и полем */
+        --label-font-size: 14px;                /* Размер шрифта подписей (Label) */
     }
 
-    /* Применяем ко всем полям ввода одновременно */
-    input, select, textarea {
-        /* 1. Делаем фон прозрачным (цвет фона Telegram) */
-        background-color: transparent !important;
-        background: transparent !important;
+    /*
+       ================================================================
+       ТЕХНИЧЕСКИЙ БЛОК (Не трогай, если не знаешь CSS)
+       ================================================================
+    */
 
-        /* 2. Убираем системные стили браузера */
+    /* Базовый сброс и применение переменных */
+    * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+    /* Применяем единый стиль ко всем типам полей */
+    input, select, textarea {
+        background-color: var(--field-bg) !important;
+        color: var(--field-text) !important;
+        border: var(--field-border-width) solid var(--field-border) !important;
+        border-radius: var(--field-radius) !important;
+        padding: 0 var(--field-padding-x) !important;
+        height: var(--field-height) !important;
+        line-height: var(--field-height) !important; /* Центрирование текста по вертикали */
+        font-size: var(--font-size-main) !important;
+        font-family: inherit;
+        outline: none;
+        width: 100%;
+        display: block;
+
+        /* Убираем системные "белые" стили браузеров */
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
 
-        /* 3. ЖЕСТКАЯ ОДИНАКОВАЯ ВЫСОТА */
-        height: var(--field-height) !important;
-        line-height: var(--field-height) !important;
-
-        /* 4. Настройка границ и отступов */
-        border: 1.5px solid var(--tg-input-border) !important;
-        border-radius: 12px !important;
-        padding: 0 14px !important; /* Убираем вертикальный padding, так как высота фиксирована */
-
-        /* 5. Текст и шрифт */
-        color: var(--tg-text) !important;
-        font-size: 15px !important;
-        font-family: inherit;
-
-        /* 6. Чтобы элементы не раздувались */
-        box-sizing: border-box !important;
-        display: block;
-        width: 100%;
-
-        outline: none;
         transition: all 0.2s ease-in-out;
     }
 
-    /* Специально для textarea (если она будет), чтобы она не была одной высоты, а могла расти */
-    textarea {
-        height: auto !important;
-        min-height: var(--field-height) !important;
-        padding: 10px 14px !important;
-    }
-
-    /* Исправление для Select (добавляем стрелочку, так как appearance:none её удалил) */
+    /* Специфические настройки для Select (добавляем стрелочку) */
     select {
         cursor: pointer;
-        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23888888%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%222%2424%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23888888%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
         background-repeat: no-repeat;
         background-position: right 12px center;
         padding-right: 35px !important;
     }
 
-    /* Эффект фокуса */
+    /* Эффект при фокусе (нажатии на поле) */
     input:focus, select:focus {
-        border-color: var(--tg-button) !important;
-        box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.15) !important;
+        border-color: var(--accent-color) !important;
+        box-string: 0 0 0 3px rgba(0, 0, 0, 0.05); /* Легкая тень */
+        box-shadow: 0 0 0 2px var(--accent-color) !important;
     }
 
-    /* Плейсхолдер */
+    /* Placeholder (подсказка) */
     ::placeholder {
-        color: var(--tg-hint) !important;
+        color: var(--field-hint) !important;
         opacity: 0.7;
     }
 
-    /* Контейнер и подписи */
-    .registration-card {
-        padding: 15px;
-        box-sizing: border-box;
-    }
-
+    /* Подписи (Labels) */
     label {
         display: block;
+        margin-top: var(--label-margin-top);
         margin-bottom: 6px;
-        margin-top: 15px;
-        font-size: 14px;
+        margin-left: 2px;
+        font-size: var(--label-font-size);
         font-weight: 600;
-        color: var(--tg-text);
+        color: var(--field-text);
+    }
+
+    /* Контейнер формы */
+    .registration-card {
+        background: var(--main-bg);
+        padding: var(--form-padding);
+        width: 100%;
+        max-width: 400px;
     }
 
     /* Кнопка */
     .btn-submit {
         width: 100%;
-        height: 50px; /* Чуть выше для акцента */
-        margin-top: 25px;
-        background-color: var(--tg-button) !important;
-        color: var(--tg-button-text) !important;
+        height: var(--btn-height) !important;
+        margin-top: var(--btn-margin-top);
+        background-color: var(--accent-color) !important;
+        color: var(--accent-text) !important;
         border: none !important;
-        border-radius: 12px !important;
-        font-size: 16px;
+        border-radius: var(--btn-radius) !important;
+        font-size: var(--btn-font-size) !important;
         font-weight: 700;
+        text-transform: uppercase;
         cursor: pointer;
-        transition: transform 0.1s ease;
+        transition: transform 0.1s ease, opacity 0.2s ease;
     }
 
     .btn-submit:active {
         transform: scale(0.97);
+        opacity: 0.9;
     }
 </style>
 </head>
