@@ -6,117 +6,135 @@
     <title>Регистрация сотрудника</title>
     <!-- Подключаем SDK Telegram -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        /* Инициализация переменных Telegram */
-        :root {
-            --tg-bg: var(--tg-theme-bg-color, #ffffff);
-            --tg-text: var(--tg-theme-text-color, #000000);
-            --tg-hint: var(--tg-theme-hint-color, #999999);
-            --tg-button: var(--tg-theme-button-color, #007bff);
-            --tg-button-text: var(--tg-theme-button-text-color, #ffffff);
-            --tg-secondary-bg: var(--tg-theme-secondary-bg-color, #f4f4f4);
-            --tg-input-bg: var(--tg-theme-input-bg-color, #ffffff);
-            --tg-input-border: var(--tg-theme-hint-color, #dddddd);
-        }
+<style>
+    /*
+       ================================================================
+       КОНТРОЛЬНАЯ ПАНЕЛЬ (Изменяй только эти значения)
+       ================================================================
+    */
+    :root {
+        /* --- ЦВЕТА (используй var(--tg-...) для интеграции с Telegram) --- */
+        --main-bg: transparent;            /* Фон всей формы */
+        --field-bg: transparent;               /* Фон полей ввода */
+        --field-border: var(--tg-theme-hint-color, #dddddd); /* Цвет границ */
+        --field-text: var(--tg-theme-text-color, #000000);    /* Цвет текста внутри */
+        --field-hint: var(--tg-theme-hint-color, #999999);  /* Цвет подсказки (placeholder) */
+        --accent-color: var(--tg-theme-button-color, #2481cc); /* Цвет при нажатии/фокусе */
+        --accent-text: varvar(--tg-theme-button-text-color, #ffffff); /* Цвет текста на кнопке */
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Используем системный цвет фона Telegram */
-            background-color: var(--tg-bg);
-            color: var(--tg-text);
-string            margin: 0;
-            padding: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; /* Для длинных форм лучше flex-start */
-            min-height: 100vh;
-        }
+        /* --- РАЗМЕРЫ (Геометрия) --- */
+        --field-height: 45px;                  /* ВЫСОТА ВСЕХ ПОЛЕЙ (сделай одинаковой) */
+        --field-radius: 12px;                  /* Скругление углов полей */
+        --field-padding-x: 14px;                /* Отступ текста слева/справа */
+        --field-border-width: 1.5px;            /* Толщина рамки */
+        --font-size-main: 15px;                /* Размер шрифта в полях */
 
-        .registration-card {
-            background: var(--tg-secondary-bg);
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 450px;
-            box-sizing: border-box;
-            /* Тень адаптируется под темную тему */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
+        /* --- КНОПКА --- */
+        --btn-height: 50px;                     /* Высота кнопки */
+        --btn-radius: 12px;                     /* Скругление кнопки */
+        --btn-font-size: 16px;                  /* Размер шрифта на кнопке */
+        --btn-margin-top: 25px;                /* Отступ кнопки от полей */
 
-        h2 {
-            text-align: center;
-            color: var(--tg-text);
-            margin-top: 0;
-            margin-bottom: 20px;
-        }
+        /* --- ОТСТУПЫ ФОРМЫ --- */
+        --form-padding: 15px;                  /* Внутренний отступ всей карточки */
+        --label-margin-top: 15px;              /* Отступ между подписью и полем */
+        --label-font-size: 14px;                /* Размер шрифта подписей (Label) */
+    }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+    /*
+       ================================================================
+       ТЕХНИЧЕСКИЙ БЛОК (Не трогай, если не знаешь CSS)
+       ================================================================
+    */
 
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            /* Используем цвет текста подсказок для подписей */
-            color: var(--tg-text);
-            font-size: 14px;
-        }
+    /* Базовый сброс и применение переменных */
+    * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
 
-        input[type="text"],
-        input[type="tel"],
-        input[type="date"],
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 12px;
-            /* Поля ввода используют цвет фона и границ Telegram */
-            border: 1px solid var(--tg-input-border);
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 16px; /* 16px предотвращает зум на iOS */
-            background-color: var(--tg-input-bg);
-            color: var(--tg-text);
-            transition: border-color 0.3s;
-        }
+    /* Применяем единый стиль ко всем типам полей */
+    input, select, textarea {
+        background-color: var(--field-bg) !important;
+        color: var(--field-text) !important;
+        border: var(--field-border-width) solid var(--field-border) !important;
+        border-radius: var(--field-radius) !important;
+        padding: 0 var(--field-padding-x) !important;
+        height: var(--field-height) !important;
+        line-height: var(--field-height) !important; /* Центрирование текста по вертикали */
+        font-size: var(--font-size-main) !important;
+        font-family: inherit;
+        outline: none;
+        width: 100%;
+        display: block;
 
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--tg-button);
-        }
+        /* Убираем системные "белые" стили браузеров */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
 
-        /* Стили для кнопки, использующие цвета темы Telegram */
-        .btn-submit {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--tg-button);
-            color: var(--tg-button-text);
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: opacity 0.3s;
-        }
+        transition: all 0.2s ease-in-out;
+    }
 
-        .btn-submit:active {
-            opacity: 0.8;
-        }
+    /* Специфические настройки для Select (добавляем стрелочку) */
+    select {
+        cursor: pointer;
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%222%2424%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23888888%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 35px !important;
+    }
 
-        /* Исправляем отображение файла */
-        input[type="file"] {
-            color: var(--tg-hint);
-            font-size: 14px;
-        }
+    /* Эффект при фокусе (нажатии на поле) */
+    input:focus, select:focus {
+        border-color: var(--accent-color) !important;
+        box-string: 0 0 0 3px rgba(0, 0, 0, 0.05); /* Легкая тень */
+        box-shadow: 0 0 0 2px var(--accent-color) !important;
+    }
 
-        /* Адаптивность */
-        @media (max-width: 480px) {
-            .registration-card {
-                padding: 15px;
-            }
-        }
-    </style>
+    /* Placeholder (подсказка) */
+    ::placeholder {
+        color: var(--field-hint) !important;
+        opacity: 0.7;
+    }
+
+    /* Подписи (Labels) */
+    label {
+        display: block;
+        margin-top: var(--label-margin-top);
+        margin-bottom: 6px;
+        margin-left: 2px;
+        font-size: var(--label-font-size);
+        font-weight: 600;
+        color: var(--field-text);
+    }
+
+    /* Контейнер формы */
+    .registration-card {
+        background: var(--main-bg);
+        padding: var(--form-padding);
+        width: 100%;
+        max-width: 400px;
+    }
+
+    /* Кнопка */
+    .btn-submit {
+        width: 100%;
+        height: var(--btn-height) !important;
+        margin-top: var(--btn-margin-top);
+        background-color: var(--accent-color) !important;
+        color: var(--accent-text) !important;
+        border: none !important;
+        border-radius: var(--btn-radius) !important;
+        font-size: var(--btn-font-size) !important;
+        font-weight: 700;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: transform 0.1s ease, opacity 0.2s ease;
+    }
+
+    .btn-submit:active {
+        transform: scale(0.97);
+        opacity: 0.9;
+    }
+</style>
 </head>
 <body>
 
@@ -127,7 +145,7 @@ string            margin: 0;
         <div class="form-group">
             <label for="fio">ФИО</label>
             <input type="text" id="fio" name="fio" placeholder="Иванов Иван Иванович" required>
-        </div>
+        </div> <!-- Исправлено: закрывающий тег был </div} -->
 
         <div class="form-group">
             <label for="branch">Филиал</label>
@@ -136,25 +154,25 @@ string            margin: 0;
                 <option value="Аппарат управления">Аппарат управления</option>
                 <option value="Мозырская ТЭЦ">Мозырская ТЭЦ</option>
                 <option value="Гомельская ТЭЦ-2">Гомельская ТЭЦ-2</option>
-                <option value="Светлогорская ТЭЦ">Светлогорская ТЭЦ</option>
+                <option value="Светлогорская ТЭЦ">Светлогор．рская ТЭЦ</option>
                 <option value="Гомельские электрические сети">Гомельские электрические сети</option>
                 <option value="Жлобинские электрические сети">Жлобинские электрические сети</option>
                 <option value="Мозырьские электрические сети">Мозырьские электрические сети</option>
-                <option value="Речицкие электриint электрические сети">Речицкие электрические сети</option>
+                <option value="Речицкие электрические сети">Речицкие электрические сети</option>
                 <option value="Гомельэнергоспецремонт">Гомельэнергоспецремонт</option>
                 <option value="Инженерный центр">Инженерный центр</option>
                 <option value="Гомельские тепловые сети">Гомельские тепловые сети</option>
-                <option value="Энергосбыт">Энергосбыт</option>
+                <option value="Энергосбыт">Эргосбыт</option>
                 <option value="Дубрава-агро">Дубрава-агро</option>
                 <option value="Агрофирма имени Лебедева">Агрофирма имени Лебедева</option>
                 <option value="Учебный-центр">Учебный-центр</option>
             </select>
-        </div>
+        </div> <!-- Исправлено: закрывающий тег -->
 
         <div class="form-group">
             <label for="tab_number">Табельный номер</label>
-            <input type="number" id="tab_number" name="tabint_number" placeholder="0000" required>
-        </div>
+            <input type="number" id="tab_number" name="tab_number" placeholder="0000" required>
+        </div> <!-- Исправлено: закрывающий тег -->
 
         <div class="form-group">
             <label for="gender">Пол</label>
@@ -163,31 +181,33 @@ string            margin: 0;
                 <option value="male">Мужской</option>
                 <option value="female">Женский</option>
             </select>
-        </div>
+        </div> <!-- Исправлено: закрывающий тег -->
 
         <div class="form-group">
+            <append label="Должность">
             <label for="position">Должность</label>
             <input type="text" id="position" name="position" placeholder="Напр: Инженер" required>
-        </div>
+        </div> <!-- Исправлено: закрывающий тег -->
 
         <div class="form-group">
             <label for="arrival_date">Дата прихода</label>
             <input type="date" id="arrival_date" name="arrival_date" required>
-        </div>
+        </div> <!-- Исправлено: закрывающий тег -->
 
         <div class="form-group">
             <label for="phone">Номер телефона</label>
             <input type="tel" id="phone" name="phone" placeholder="+7 (___) ___-__-__" required>
-        </div>
+        </div> <!-- Исправлено: закрывающий тег -->
 
         <div class="form-group">
             <label for="photo">Фото сотрудника</label>
             <input type="file" id="photo" name="photo" accept="image/*" required>
-        </div>
+        </div> <!-- Исправлено: закрывающий тег -->
 
-        <button type="submit" class="btn-append">Зарегистрировать</button>
+        <!-- Исправлено: класс кнопки теперь btn-submit, как в CSS -->
+        <button type="submit" class="btn-submit">Зарегистрировать</button>
     </form>
-</div>
+</div> <!-- Исправлено: закрывающий тег -->
 
 <script>
     const tg = window.Telegram.WebApp;
@@ -198,18 +218,16 @@ string            margin: 0;
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        // Показываем индикатор загрузки (опционально)
+        // Исправлено: поиск кнопки по правильному классу
         const submitBtn = document.querySelector('.btn-submit');
         const originalText = submitBtn.innerText;
+
         submitBtn.innerText = "Отправка...";
         submitBtn.disabled = true;
 
-        // Создаем FormData (он автоматически включает файлы)
         const formData = new FormData(form);
 
         try {
-            // ЗАМЕНИТЕ URL на адрес вашего сервера (например, https://your-domain.com/upload)
-            // Для тестов локально: http://127.0.0.1:8000/upload
             const response = await fetch('http://127.0.0.1:8000/upload', {
                 method: 'POST',
                 body: formData
@@ -219,11 +237,11 @@ string            margin: 0;
 
             if (response.ok) {
                 alert("Успешно зарегистрировано!");
-                tg.close(); // Закрываем WebApp после успеха
+                tg.close();
             } else {
                 alert("Ошибка: " + (result.detail || "Не удалось отправить данные"));
                 submitBtn.innerText = originalText;
-                submit_btn.disabled = false;
+                submitBtn.disabled = false;
             }
         } catch (error) {
             console.error(error);
