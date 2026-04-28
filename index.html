@@ -8,106 +8,111 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
     :root {
-        --tg-bg: varint(--tg-theme-bg-color, #ffffff);
+        --tg-bg: var(--tg-theme-bg-color, #ffffff);
         --tg-text: var(--tg-theme-text-color, #000000);
         --tg-hint: var(--tg-theme-hint-color, #999999);
         --tg-button: var(--tg-theme-button-color, #2481cc);
         --tg-button-text: var(--tg-theme-button-text-color, #ffffff);
         --tg-input-border: var(--tg-theme-hint-color, #dddddd);
+
+        /* Единая высота для всех элементов */
+        --field-height: 45px;
     }
 
-    /* Применяем ко всем типам ввода сразу */
+    /* Применяем ко всем полям ввода одновременно */
     input, select, textarea {
-        /* Убираем стандартный белый фон браузера */
+        /* 1. Делаем фон прозрачным (цвет фона Telegram) */
         background-color: transparent !important;
         background: transparent !important;
 
-        /* Убираем системные стили (особенно важно для select и date) */
+        /* 2. Убираем системные стили браузера */
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
 
-        color: var(--tg-text) !important;
-        border: 1.5px solid var(--tg-input-border) !important;
-        border-radius: 10px !important;
+        /* 3. ЖЕСТКАЯ ОДИНАКОВАЯ ВЫСОТА */
+        height: var(--field-height) !important;
+        line-height: var(--field-height) !important;
 
-        /* Уменьшаем размер: убираем лишнюю высоту */
-        padding: 10px 14px !important;
+        /* 4. Настройка границ и отступов */
+        border: 1.5px solid var(--tg-input-border) !important;
+        border-radius: 12px !important;
+        padding: 0 14px !important; /* Убираем вертикальный padding, так как высота фиксирована */
+
+        /* 5. Текст и шрифт */
+        color: var(--tg-text) !important;
         font-size: 15px !important;
+        font-family: inherit;
+
+        /* 6. Чтобы элементы не раздувались */
+        box-sizing: border-box !important;
+        display: block;
+        width: 100%;
 
         outline: none;
-        box-sizing: border-box;
         transition: all 0.2s ease-in-out;
     }
 
-    /* Специально для полей даты и времени, чтобы убрать белые иконки/фон */
-    input[type="date"],
-    input[type="time"],
-    input[type="datetime-local"] {
-        min-height: 40px; /* Ограничиваем минимальную высоту */
+    /* Специально для textarea (если она будет), чтобы она не была одной высоты, а могла расти */
+    textarea {
+        height: auto !important;
+        min-height: var(--field-height) !important;
+        padding: 10px 14px !important;
     }
 
-    /* Эффект при фокусе (нажатии) */
-    input:focus, select:focus {
-        border-color: var(--tg-button) !important;
-        box-shadow: 0 0 0 3px rgba(36, 129, 204, 0.15) !important;
-    }
-
-    /* Стилизация выпадающего списка (Select) */
+    /* Исправление для Select (добавляем стрелочку, так как appearance:none её удалил) */
     select {
         cursor: pointer;
-        /* Добавляем кастомную стрелочку, так как appearance:none её удалил */
-        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2424%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23888888%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
-        background-repeat: repeat;
-        background-position: right 10px center;
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23888888%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
         padding-right: 35px !important;
     }
 
-    /* Плейсхолдер (подсказка) */
+    /* Эффект фокуса */
+    input:focus, select:focus {
+        border-color: var(--tg-button) !important;
+        box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.15) !important;
+    }
+
+    /* Плейсхолдер */
     ::placeholder {
         color: var(--tg-hint) !important;
         opacity: 0.7;
     }
 
-    /* Контейнер для формы, чтобы поля не слипались */
+    /* Контейнер и подписи */
     .registration-card {
-        background: var(--tg-secondary-bg, transparent);
-        padding: 20px;
-        border-radius: 20px;
-        width: 100%;
-        max-width: 300px;
+        padding: 15px;
         box-sizing: border-box;
     }
 
-    /* Стили для подписей (Label) */
     label {
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 6px;
         margin-top: 15px;
         font-size: 14px;
         font-weight: 600;
         color: var(--tg-text);
-        margin-left: 2px;
     }
 
     /* Кнопка */
     .btn-submit {
         width: 100%;
+        height: 50px; /* Чуть выше для акцента */
         margin-top: 25px;
-        padding: 14px;
         background-color: var(--tg-button) !important;
         color: var(--tg-button-text) !important;
         border: none !important;
         border-radius: 12px !important;
         font-size: 16px;
         font-weight: 700;
-        text-transform: uppercase;
         cursor: pointer;
         transition: transform 0.1s ease;
     }
 
     .btn-submit:active {
-        transform: scale(0.98);
+        transform: scale(0.97);
     }
 </style>
 </head>
